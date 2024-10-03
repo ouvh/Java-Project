@@ -1,0 +1,4 @@
+customers  =====order ==== food  ===== from restaurant;
+
+customer:                    restaurant                          delivery guy
+-presonal info
