@@ -1,0 +1,61 @@
+@startuml
+class User {
+  + email: String
+  + username: String
+  + password: String (hashed)
+  + profileImage: String
+}
+
+class Project {
+  + type: String
+  + projectName: String
+}
+
+class ProjectInvitation {
+  + from: User
+  + to: User
+}
+
+class ProjectJoinRequest {
+  + from: User
+  + to: User
+  + message: String
+}
+
+class Task {
+  + deadline: Date
+  + studentsConcerned: Array
+  + description: Text
+  + status: String
+}
+
+class TasksList {}
+
+class DocumentSpace {}
+
+class Document {
+  + storageLink: String
+}
+
+class Folder {
+  + name: String
+}
+
+class ChatGroup {}
+
+class Message {
+  + sender: String
+  + content: String
+}
+
+User "1" -- "0..*" ProjectInvitation : sends
+User "1" -- "0..*" ProjectJoinRequest : requests
+Project "1" -- "1..*" TasksList
+TasksList "1" -- "0..*" Task
+Project "1" -- "1" DocumentSpace
+DocumentSpace "1" -- "0..*" Document
+DocumentSpace "1" -- "0..*" Folder
+Project "1" -- "1" ChatGroup
+ChatGroup "1" -- "0..*" Message
+
+@enduml
