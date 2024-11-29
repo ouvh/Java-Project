@@ -1,0 +1,147 @@
+
+
+
+
+
+@startuml
+
+' --- User Hierarchy ---
+package "User Management" {
+    class User {
+        - email: String
+        - username: String
+        - password: String
+        - profileImage: String
+        + register(): void
+        + login(): void
+        + updateProfile(): void
+    }
+
+    class Admin {
+        - createdProjects: List<Project>
+        - invitedMembers: List<User>
+        + createProject(project: Project): void
+        + inviteMember(member: User, project: Project): void
+        + assignTask(task: Task, member: Member): void
+        + manageFilePermissions(file: File, user: User): void
+        + sendInvitation(project: Project, user: User): void
+    }
+
+    class Member {
+        - joinedProjects: List<Project>
+        - assignedTasks: List<Task>
+        - uploadedFiles: List<File>
+        - chatMessages: List<Message>
+        + joinProject(project: Project): void
+        + viewTask(task: Task): void
+        + updateTaskStatus(task: Task, status: String): void
+        + uploadFile(file: File, folder: Folder): void
+        + sendMessage(message: Message): void
+    }
+
+    User <|-- Admin
+    User <|-- Member
+}
+
+' --- Project Management ---
+package "Project Management" {
+    class Project {
+        - type: String
+        - projectName: String
+        - members: List<Member>
+        - tasks: List<Task>
+        - folders: List<Folder>
+        - chatGroup: ChatGroup
+        + addTask(task: Task): void
+        + addMember(member: Member): void
+        + addFolder(folder: Folder): void
+        + createChatGroup(): void
+    }
+
+    class Task {
+        - taskDescription: String
+        - taskDeadline: Date
+        - studentsConcerned: List<Member>
+        - taskStatus: String
+        + updateStatus(status: String): void
+        + setDeadline(deadline: Date): void
+    }
+
+    class Folder {
+        - folderName: String
+        - files: List<File>
+        + addFile(file: File): void
+    }
+
+    class File {
+        - fileName: String
+        - documentStorageLink: String
+        - folder: Folder
+        + uploadFile(): void
+        + updateFile(): void
+    }
+
+    Project "1" -- "*" Member : has
+    Project "1" -- "*" Task : contains
+    Project "1" -- "*" Folder : contains
+    Project "1" -- "1" ChatGroup : has
+    Folder "1" -- "*" File : contains
+    Task "*" -- "*" Member : assigned to
+}
+
+' --- Chat Management ---
+package "Chat Management" {
+    class Message {
+        - sender: String
+        - messageContent: String
+        + sendMessage(): void
+    }
+
+    class ChatGroup {
+        - messages: List<Message>
+        + addMessage(message: Message): void
+    }
+
+    Member "1" -- "*" Message : sends
+    ChatGroup "1" -- "*" Message : contains
+}
+
+' --- Invitation and Requests ---
+package "Invitations & Requests" {
+    class Invitation {
+        - from: User
+        - to: User
+        - project: Project
+        + acceptInvitation(): void
+        + rejectInvitation(): void
+    }
+
+    class JoinRequest {
+        - from: User
+        - to: Admin
+        - message: String
+        + submitRequest(): void
+        + cancelRequest(): void
+    }
+
+    Invitation "1" -- "1" User : from
+    Invitation "1" -- "1" User : to
+    JoinRequest "1" -- "1" User : from
+    JoinRequest "1" -- "1" Admin : to
+}
+
+' --- Platform Management ---
+package "Platform" {
+    class Platform {
+        - projects: List<Project>
+        - users: List<User>
+        + registerUser(user: User): void
+        + createProject(project: Project): void
+        + addUserToProject(user: User, project: Project): void
+    }
+
+    Platform "1" -- "*" Project : manages
+    Platform "1" -- "*" User : manages
+}
+
+@enduml
