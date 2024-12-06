@@ -1,0 +1,109 @@
+@startuml
+
+' --- User Hierarchy ---
+package "User Management" {
+    class User {
+        - id: Long
+        - email: String
+        - username: String
+        - password: String
+        - profileImage: String
+        - role: Role <<enum>>
+        + register(): void
+        + login(): void
+        + updateProfile(): void
+    }
+
+    class Admin {
+        - createdProjects: List<Project>
+        + createProject(project: Project): void
+        + inviteUser(user: User, project: Project): void
+        + manageProject(project: Project): void
+    }
+
+    class Member {
+        - tasks: List<Task>
+        + joinProject(project: Project): void
+        + updateTaskStatus(task: Task, status: TaskStatus): void
+        + uploadFile(file: File): void
+    }
+
+    User <|-- Admin
+    User <|-- Member
+}
+
+' --- Project Management ---
+package "Project Management" {
+    class Project {
+        - id: Long
+        - name: String
+        - type: String
+        - admin: Admin
+        - members: List<Member>
+        - tasks: List<Task>
+        - files: List<File>
+        + addTask(task: Task): void
+        + addMember(member: Member): void
+    }
+
+    class Task {
+        - id: Long
+        - description: String
+        - deadline: Date
+        - status: TaskStatus <<enum>>
+        - assignedTo: Member
+        + updateStatus(status: TaskStatus): void
+    }
+
+    class File {
+        - id: Long
+        - fileName: String
+        - storageUrl: String
+        - uploadedBy: Member
+    }
+
+    Admin "1" -- "*" Project : creates
+    Project "1" -- "*" Task : contains
+    Project "1" -- "*" File : contains
+    Project "1" -- "*" Member : has
+    Task "1" -- "1" Member : assigned to
+}
+
+' --- Chat Management ---
+package "Chat Management" {
+    class ChatGroup {
+        - id: Long
+        - project: Project
+        - messages: List<Message>
+        + addMessage(message: Message): void
+    }
+
+    class Message {
+        - id: Long
+        - sender: Member
+        - content: String
+        - timestamp: Date
+        + sendMessage(): void
+    }
+
+    ChatGroup "1" -- "*" Message : contains
+    Message "1" -- "1" Member : sent by
+}
+
+' --- Invitation Management ---
+package "Invitations" {
+    class Invitation {
+        - id: Long
+        - sender: Admin
+        - recipient: User
+        - project: Project
+        + acceptInvitation(): void
+        + declineInvitation(): void
+    }
+
+    Invitation "1" -- "1" Admin : sent by
+    Invitation "1" -- "1" User : sent to
+    Invitation "1" -- "1" Project : for
+}
+
+@enduml
