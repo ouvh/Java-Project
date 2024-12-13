@@ -25,8 +25,7 @@ public abstract class User {
 
     private String profileImage;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -82,15 +81,7 @@ public abstract class User {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
+   
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

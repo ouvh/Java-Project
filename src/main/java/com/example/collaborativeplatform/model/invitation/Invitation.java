@@ -1,7 +1,7 @@
 package com.example.collaborativeplatform.model.invitation;
 
 import com.example.collaborativeplatform.model.project.Project;
-import com.example.collaborativeplatform.model.user.Admin;
+import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.model.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public class Invitation {
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false) // Maps to sender's primary key
-    private Admin sender;
+    private Member sender;
 
     @ManyToOne
     @JoinColumn(name = "recipient_id", nullable = false) // Maps to recipient's primary key
@@ -34,7 +34,7 @@ public class Invitation {
     public Invitation() {
     }
 
-    public Invitation(Admin sender, User recipient, Project project) {
+    public Invitation(Member sender, User recipient, Project project) {
         this.sender = sender;
         this.recipient = recipient;
         this.project = project;

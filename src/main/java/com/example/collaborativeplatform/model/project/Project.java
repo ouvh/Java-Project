@@ -19,7 +19,7 @@ public class Project {
     private String type;
 
     @ManyToOne
-    private Admin admin;
+    private Member admin;
 
     @ManyToMany
     private List<Member> members = new ArrayList<>();

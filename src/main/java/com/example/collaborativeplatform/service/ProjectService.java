@@ -1,7 +1,7 @@
 package com.example.collaborativeplatform.service;
 
 import com.example.collaborativeplatform.model.project.Project;
-import com.example.collaborativeplatform.model.user.Admin;
+import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,13 +15,13 @@ public class ProjectService {
     private ProjectRepository projectRepository;
 
     // Create a new project
-    public Project createProject(Project project, Admin admin) {
+    public Project createProject(Project project, Member admin) {
         project.setAdmin(admin);
         return projectRepository.save(project);
     }
 
     // Get projects by admin
-    public List<Project> getProjectsByAdmin(Admin admin) {
+    public List<Project> getProjectsByAdmin(Member admin) {
         return projectRepository.findByAdmin(admin);
     }
 

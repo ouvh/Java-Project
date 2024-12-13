@@ -14,9 +14,6 @@ public class Member extends User {
     @ManyToMany(mappedBy = "members")
     private List<Project> joinedProjects = new ArrayList<>();
 
-    @OneToMany(mappedBy = "assignedTo")
-    private List<Task> assignedTasks = new ArrayList<>();
-
     public List<Project> getJoinedProjects() {
         return joinedProjects;
     }
@@ -25,13 +22,19 @@ public class Member extends User {
         this.joinedProjects = joinedProjects;
     }
 
-    public List<Task> getAssignedTasks() {
-        return assignedTasks;
+    @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL)
+    private List<Project> createdProjects = new ArrayList<>();
+
+
+    public List<Project> getCreatedProjects() {
+        return createdProjects;
     }
 
-    public void setAssignedTasks(List<Task> assignedTasks) {
-        this.assignedTasks = assignedTasks;
+    public void setCreatedProjects(List<Project> createdProjects) {
+        this.createdProjects = createdProjects;
     }
+
+  
 }
 
 

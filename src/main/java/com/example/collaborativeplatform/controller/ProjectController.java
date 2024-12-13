@@ -1,7 +1,7 @@
 package com.example.collaborativeplatform.controller;
 
 import com.example.collaborativeplatform.model.project.Project;
-import com.example.collaborativeplatform.model.user.Admin;
+import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.service.ProjectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class ProjectController {
     // Create a new project
     @PostMapping("/create")
     public ResponseEntity<Project> createProject(@RequestBody Project project, @RequestParam Long adminId) {
-        Admin admin = new Admin();
+        Member admin = new Member();
         admin.setId(adminId); // Simulate finding the admin
         Project createdProject = projectService.createProject(project, admin);
         return ResponseEntity.ok(createdProject);
@@ -30,7 +30,7 @@ public class ProjectController {
     // Get projects by admin
     @GetMapping("/admin/{adminId}")
     public ResponseEntity<List<Project>> getProjectsByAdmin(@PathVariable Long adminId) {
-        Admin admin = new Admin();
+        Member admin = new Member();
         admin.setId(adminId); // Simulate finding the admin
         List<Project> projects = projectService.getProjectsByAdmin(admin);
         return ResponseEntity.ok(projects);
