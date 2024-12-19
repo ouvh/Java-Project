@@ -2,12 +2,12 @@ package com.example.collaborativeplatform.service;
 
 import com.example.collaborativeplatform.model.project.Task;
 import com.example.collaborativeplatform.model.project.Project;
-import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -16,14 +16,11 @@ public class TaskService {
     private TaskRepository taskRepository;
 
     // Create a new task
-    public Task createTask(Task task, Project project) {
-        task.setProject(project);
+    public Task createTask(Task task) {
         return taskRepository.save(task);
     }
 
-    // Assign a task to a member
-    public Task assignTask(Task task, Member member) {
-        task.setAssignedTo(member);
+    public Task saveTask(Task task) {
         return taskRepository.save(task);
     }
 
@@ -35,5 +32,10 @@ public class TaskService {
     // Get tasks by status
     public List<Task> getTasksByStatus(String status) {
         return taskRepository.findByStatus(status);
+    }
+
+     // Get tasks by idgetTaskById
+     public Optional<Task> getTaskById(Long id) {
+        return taskRepository.findById(id);
     }
 }

@@ -2,7 +2,6 @@ package com.example.collaborativeplatform.service;
 
 import com.example.collaborativeplatform.model.chat.ChatGroup;
 import com.example.collaborativeplatform.model.chat.Message;
-import com.example.collaborativeplatform.repository.ChatGroupRepository;
 import com.example.collaborativeplatform.repository.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +14,9 @@ public class ChatService {
     @Autowired
     private MessageRepository messageRepository;
 
-    @Autowired
-    private ChatGroupRepository chatGroupRepository;
-
+    
     // Post a message
-    public Message postMessage(Message message, ChatGroup chatGroup) {
-        message.setChatGroup(chatGroup);
+    public Message postMessage(Message message) {
         return messageRepository.save(message);
     }
 

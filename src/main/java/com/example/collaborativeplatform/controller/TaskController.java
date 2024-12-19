@@ -4,6 +4,8 @@ import com.example.collaborativeplatform.model.project.Project;
 import com.example.collaborativeplatform.model.project.Task;
 import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.service.TaskService;
+import com.example.collaborativeplatform.service.ProjectService;
+import com.example.collaborativeplatform.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,37 +16,76 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final ProjectService projectService;
+    private final UserService userService;
 
-    public TaskController(TaskService taskService) {
+    // Constructor injection for repositories
+    public TaskController(TaskService taskService, ProjectService projectService, UserService userService) {
         this.taskService = taskService;
+        this.projectService = projectService;
+        this.userService = userService;
     }
 
-    // Create a new task
+    // OK
+    // Create a new task and assign it to a project and member
     @PostMapping("/create")
-    public ResponseEntity<Task> createTask(@RequestBody Task task, @RequestParam Long projectId) {
-        Project project = new Project();
-        project.setId(projectId); // Simulate finding the project
-        Task createdTask = taskService.createTask(task, project);
+    public ResponseEntity<?> createTask(@RequestBody Task task, @RequestParam Long projectId, @RequestParam Long memberId) {
+        // Fetch the project by ID
+        Project project = projectService.findById(projectId).orElse(null);
+        if (project == null) {
+            return ResponseEntity.badRequest().body("Project with ID " + projectId + " not found");
+        }
+
+        task.setProject(project); // Set the project in the task
+
+        // Fetch the member by ID and assign the task
+        Member member = userService.getUserById(memberId).orElse(null);
+        if (member == null) {
+            return ResponseEntity.badRequest().body("Member with ID " + memberId + " not found");
+        }
+
+        task.setAssignedTo(member);
+
+        // Create the task
+        Task createdTask = taskService.createTask(task);
         return ResponseEntity.ok(createdTask);
     }
 
-    // Assign task to member
-    @PostMapping("/assign")
-    public ResponseEntity<Task> assignTask(@RequestParam Long taskId, @RequestParam Long memberId) {
-        Task task = new Task();
-        task.setId(taskId); // Simulate finding the task
-        Member member = new Member();
-        member.setId(memberId); // Simulate finding the member
-        Task assignedTask = taskService.assignTask(task, member);
-        return ResponseEntity.ok(assignedTask);
+    // OK
+    // Update task details (e.g., description, deadline, status)
+    @PutMapping("/{taskId}")
+    public ResponseEntity<?> updateTask(@PathVariable Long taskId, @RequestBody Task taskUpdates) {
+        Task task = taskService.getTaskById(taskId).orElse(null);
+        if (task == null) {
+            return ResponseEntity.badRequest().body("Task with ID " + taskId + " not found");
+        }
+
+        // Only update fields that are not null
+        if (taskUpdates.getDescription() != null) {
+            task.setDescription(taskUpdates.getDescription());
+        }
+        if (taskUpdates.getDeadline() != null) {
+            task.setDeadline(taskUpdates.getDeadline());
+        }
+        if (taskUpdates.getStatus() != null) {
+            task.setStatus(taskUpdates.getStatus());
+        }
+
+        Task updatedTask = taskService.saveTask(task);
+        return ResponseEntity.ok(updatedTask);
     }
 
     // Get tasks by project
+    // OK
     @GetMapping("/project/{projectId}")
-    public ResponseEntity<List<Task>> getTasksByProject(@PathVariable Long projectId) {
-        Project project = new Project();
-        project.setId(projectId); // Simulate finding the project
+    public ResponseEntity<?> getTasksByProject(@PathVariable Long projectId) {
+        Project project = projectService.findById(projectId).orElse(null);
+        if (project == null) {
+            return ResponseEntity.badRequest().body("Project with ID " + projectId + " not found");
+        }
+
         List<Task> tasks = taskService.getTasksByProject(project);
         return ResponseEntity.ok(tasks);
     }
 }
+ 

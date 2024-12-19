@@ -5,11 +5,19 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class User {
+public abstract class User implements UserDetails {
+    private static final long serialVersionUID = 1L;
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,8 +25,8 @@ public abstract class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String username;
+    @Column(nullable = false, unique = true)
+    private String handle;
 
     @Column(nullable = false)
     private String password;
@@ -58,12 +66,12 @@ public abstract class User {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getHandle() {
+        return handle;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setHandle(String handle) {
+        this.handle = handle;
     }
 
     public String getPassword() {
@@ -96,5 +104,34 @@ public abstract class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

@@ -1,19 +1,27 @@
 package com.example.collaborativeplatform.service;
 
+import com.example.collaborativeplatform.model.user.Member;
 import com.example.collaborativeplatform.model.user.User;
 import com.example.collaborativeplatform.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService  {
 
+    private final BCryptPasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
 
     // Constructor-based injection
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -23,16 +31,53 @@ public class UserService {
      * @return The saved User object.
      * @throws IllegalArgumentException if the email is already in use.
      */
-    public User registerUser(User user) {
+
+     /* 
+    public User registerUser(Member user) {
         // Check if the email already exists
-        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        Optional<Member> existingUser = userRepository.findByEmail(user.getEmail());
+        Optional<Member> existingHandle = userRepository.findByHandle(user.getHandle());
+
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Email already exists!");
         }
+        if (existingHandle.isPresent()) {
+            throw new IllegalArgumentException("Handle already used!");
+        }
+
 
         // Save the new user
         return userRepository.save(user);
     }
+    */
+
+
+    public User registerUser(Member user) {
+        // Check if the email already exists
+        Optional<Member> existingUser = userRepository.findByEmail(user.getEmail());
+        Optional<Member> existingHandle = userRepository.findByHandle(user.getHandle());
+
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Email already exists!");
+        }
+        if (existingHandle.isPresent()) {
+            throw new IllegalArgumentException("Handle already used!");
+        }
+
+
+        // Encrypt the user's password
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);  // Set the encoded password to the user object
+
+        // Save the new user
+        return userRepository.save(user);
+    }
+
+
+
+
+
+
 
     /**
      * Find a user by their ID.
@@ -40,7 +85,7 @@ public class UserService {
      * @param id The user's ID.
      * @return An Optional containing the user if found, or empty otherwise.
      */
-    public Optional<User> getUserById(Long id) {
+    public Optional<Member> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
@@ -50,17 +95,48 @@ public class UserService {
      * @param email The user's email.
      * @return An Optional containing the user if found, or empty otherwise.
      */
-    public Optional<User> findByEmail(String email) {
+    public Optional<Member> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
     /**
-     * Find a user by their username.
+     * Find a user by their Handle.
      *
-     * @param username The user's username.
+     * @param handle The user's Handle.
      * @return An Optional containing the user if found, or empty otherwise.
      */
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public Optional<Member> findByHandle(String handle) {
+        return userRepository.findByHandle(handle);
     }
+
+
+    @Override
+    public UserDetails loadUserByUsername(String handle) throws UsernameNotFoundException {
+        // Fetch user from database
+        Member user = userRepository.findByHandle(handle)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        // Convert User to UserDetails
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                null);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
