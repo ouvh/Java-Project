@@ -37,6 +37,7 @@ public class UserController {
     }
     // OK
     // Get user by email
+    @CrossOrigin(origins = "http://localhost:8080")
     @GetMapping("/email/{email}")
     public ResponseEntity<Member> getUserByEmail(@PathVariable String email) {
         Optional<Member> user = userService.findByEmail(email);

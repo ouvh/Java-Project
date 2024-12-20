@@ -32,6 +32,7 @@ public class AuthenticationService {
         user.setHandle(input.getHandle());
         user.setEmail(input.getEmail());
         user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setProfileImage(input.getProfileImage());
     
 
         return userRepository.save(user);
